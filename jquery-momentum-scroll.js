@@ -19,6 +19,11 @@ jQuery(function($) {
             , jmScroll = {
                 _init: function() {
                     if( wrapper.length == 1 ) {
+                        target.css({
+                            margin: '0',
+                            padding: '0',
+                            width: '100%'
+                        });
                         wrapper.css({
                             transition: 'transform ' + duration + ' ' + easing,
                             position: 'fixed',
