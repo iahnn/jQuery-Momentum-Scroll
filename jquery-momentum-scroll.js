@@ -3,7 +3,7 @@
  * This will transform the native scroll of the browser into a very smooth scroll with momentum effect
  * https://github.com/iahnn/jQuery-Momentum-Scroll
  * licensed under MIT
- * version 1.0
+ * version 1.0.2
  */
 jQuery(function($) {
 
@@ -15,12 +15,10 @@ jQuery(function($) {
             , easing = "ease-out" //css easing
             , duration = "1.2s" //duration ms(millisecond) or s(second)
             , top = 0
+            , resizeTimeout
             , jmScroll = {
                 _init: function() {
                     if( wrapper.length == 1 ) {
-
-                        jmScroll._resize();
-
                         wrapper.css({
                             transition: 'transform ' + duration + ' ' + easing,
                             position: 'fixed',
@@ -33,15 +31,29 @@ jQuery(function($) {
                             backfaceVisibility: 'hidden'
                         });
 
-                        jmScroll._scroll();
+                        jmScroll._reFlow(function() {
+                            jmScroll._scroll();
+                        });
                     }
                 },
+
                 _scroll: function() {
                     top = win.scrollTop();
                     wrapper.css('transform', 'translateY(-' + top + 'px)');
                 },
-                _resize: function() {
-                    target.height(wrapper.outerHeight());
+
+                _reFlow: function(callback) {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(function() {
+                        target.height(wrapper.height());
+
+                        var getType = {};
+                        var isCallback = callback && getType.toString.call(callback) === '[object Function]';
+
+                        if(isCallback) {
+                            callback();
+                        }
+                    }, 200);
                 }
             };
 
@@ -51,7 +63,7 @@ jQuery(function($) {
                 jmScroll._scroll();
             }
             , resize: function() {
-                jmScroll._resize();
+                jmScroll._reFlow();
             }
             , load: function() {
                 jmScroll._init();
